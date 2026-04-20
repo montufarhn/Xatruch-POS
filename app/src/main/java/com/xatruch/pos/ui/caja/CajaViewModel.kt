@@ -9,6 +9,7 @@ import com.xatruch.pos.data.entity.InvoiceItem
 import com.xatruch.pos.data.entity.Product
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class CajaViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -58,16 +59,31 @@ class CajaViewModel(application: Application) : AndroidViewModel(application) {
         _cartItems.value = emptyList()
     }
 
+    private val _lastProcessedInvoice = MutableLiveData<Triple<Invoice, List<InvoiceItem>, BusinessData>?>()
+    val lastProcessedInvoice: LiveData<Triple<Invoice, List<InvoiceItem>, BusinessData>?> = _lastProcessedInvoice
+
+    fun clearLastInvoice() {
+        _lastProcessedInvoice.value = null
+    }
+
     fun processInvoice(customerName: String, customerRtn: String) {
         viewModelScope.launch {
-            val businessData = businessDao.getBusinessData().firstOrNull()
+            val business = businessDao.getBusinessData().firstOrNull() ?: BusinessData()
             val currentCart = _cartItems.value.orEmpty()
             if (currentCart.isEmpty()) return@launch
 
-            val invoiceNumber = "INV-${System.currentTimeMillis()}"
+            // Obtener el número de factura secuencial
+            val nextInvoiceNum = if (business.currentInvoiceNumber < business.initialInvoiceNumber) {
+                business.initialInvoiceNumber
+            } else {
+                business.currentInvoiceNumber
+            }
+            
+            // Formatear con ceros a la izquierda (ej: 000722)
+            val formattedInvoiceNumber = String.format(Locale.getDefault(), "%06d", nextInvoiceNum)
             
             val invoice = Invoice(
-                invoiceNumber = invoiceNumber,
+                invoiceNumber = formattedInvoiceNumber,
                 totalAmount = totalAmount.value ?: 0.0,
                 customerName = if (customerName.isBlank()) "Consumidor Final" else customerName,
                 rtn = customerRtn,
@@ -85,7 +101,14 @@ class CajaViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
 
-            invoiceDao.insertInvoiceWithItems(invoice, invoiceItems)
+            val id = invoiceDao.insertInvoiceWithItems(invoice, invoiceItems)
+            
+            // Actualizar el número de factura para la próxima vez
+            businessDao.insertOrUpdate(business.copy(currentInvoiceNumber = nextInvoiceNum + 1))
+            
+            val savedInvoice = invoice.copy(id = id)
+            
+            _lastProcessedInvoice.postValue(Triple(savedInvoice, invoiceItems, business))
             clearCart()
         }
     }

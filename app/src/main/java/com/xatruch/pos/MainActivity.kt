@@ -32,29 +32,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         val navHostFragment =
-            (supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment?)!!
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
         val navController = navHostFragment.navController
 
-        binding.navView?.let {
-            appBarConfiguration = AppBarConfiguration(
-                setOf(
-                    R.id.nav_caja, R.id.nav_cocina, R.id.nav_inventario, R.id.nav_reportes, R.id.nav_menu, R.id.nav_settings
-                ),
-                binding.drawerLayout
-            )
-            setupActionBarWithNavController(navController, appBarConfiguration)
-            it.setupWithNavController(navController)
-        }
+        // Definimos los destinos principales (los que muestran el icono del Drawer en lugar de la flecha atrás)
+        val topLevelDestinations = setOf(
+            R.id.nav_caja, R.id.nav_cocina, R.id.nav_inventario, R.id.nav_reportes, R.id.nav_menu
+        )
 
-        binding.appBarMain.contentMain.bottomNavView?.let {
-            appBarConfiguration = AppBarConfiguration(
-                setOf(
-                    R.id.nav_caja, R.id.nav_cocina, R.id.nav_menu
-                )
-            )
-            setupActionBarWithNavController(navController, appBarConfiguration)
-            it.setupWithNavController(navController)
-        }
+        appBarConfiguration = AppBarConfiguration(
+            topLevelDestinations,
+            binding.navView?.let { binding.drawerLayout }
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+
+        // Vincular los componentes de navegación si existen en el layout actual
+        binding.navView?.setupWithNavController(navController)
+        binding.appBarMain.contentMain.bottomNavView?.setupWithNavController(navController)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -71,13 +65,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        return when (item.itemId) {
             R.id.nav_settings -> {
-                val navController = findNavController(R.id.nav_host_fragment_content_main)
                 navController.navigate(R.id.nav_settings)
+                true
             }
+            else -> super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onSupportNavigateUp(): Boolean {

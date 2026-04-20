@@ -23,10 +23,11 @@ interface InvoiceDao {
     suspend fun insertInvoiceItems(items: List<InvoiceItem>)
 
     @Transaction
-    suspend fun insertInvoiceWithItems(invoice: Invoice, items: List<InvoiceItem>) {
+    suspend fun insertInvoiceWithItems(invoice: Invoice, items: List<InvoiceItem>): Long {
         val invoiceId = insertInvoice(invoice)
         val itemsWithId = items.map { it.copy(invoiceId = invoiceId) }
         insertInvoiceItems(itemsWithId)
+        return invoiceId
     }
 
     @Query("SELECT * FROM invoice_items WHERE invoiceId = :invoiceId")

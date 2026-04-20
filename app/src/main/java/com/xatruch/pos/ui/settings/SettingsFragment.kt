@@ -80,11 +80,16 @@ class SettingsFragment : Fragment() {
                 if (!it.logoUri.isNullOrEmpty()) {
                     try {
                         val uri = Uri.parse(it.logoUri)
-                        selectedLogoUri = uri
-                        binding.imgLogo.setImageURI(uri)
+                        // Verify if we still have permission to access this URI
+                        context?.contentResolver?.query(uri, null, null, null, null)?.use {
+                            selectedLogoUri = uri
+                            binding.imgLogo.setImageURI(uri)
+                        } ?: run {
+                            // If we can't access it, don't try to load it and maybe clear it
+                            selectedLogoUri = null
+                        }
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        // Optionally set a default icon if loading fails
                     }
                 }
             }
