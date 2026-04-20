@@ -7,6 +7,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface InvoiceDao {
+    @Query("SELECT * FROM invoices WHERE status = 'PENDIENTE' ORDER BY date ASC")
+    fun getPendingInvoices(): Flow<List<Invoice>>
+
+    @Query("UPDATE invoices SET status = :status WHERE id = :invoiceId")
+    suspend fun updateInvoiceStatus(invoiceId: Long, status: String)
+
     @Query("SELECT * FROM invoices ORDER BY date DESC")
     fun getAllInvoices(): Flow<List<Invoice>>
 

@@ -6,15 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.xatruch.pos.data.Producto
-import com.xatruch.pos.data.TipoProducto
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.xatruch.pos.databinding.FragmentMenuBinding
 
 class MenuFragment : Fragment() {
 
     private var _binding: FragmentMenuBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: MenuViewModel by viewModels()
+    private lateinit var productAdapter: ProductAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,29 +23,47 @@ class MenuFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
+        
+        setupRecyclerView()
+        observeViewModel()
+        
         binding.btnGuardar.setOnClickListener {
             guardarProducto()
         }
 
-        return root
+        return binding.root
+    }
+
+    private fun setupRecyclerView() {
+        productAdapter = ProductAdapter()
+        binding.recyclerMenu.apply {
+            adapter = productAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.allProducts.observe(viewLifecycleOwner) { products ->
+            productAdapter.submitList(products)
+        }
     }
 
     private fun guardarProducto() {
         val nombre = binding.editNombre.text.toString()
         val precioStr = binding.editPrecio.text.toString()
-        val tipo = if (binding.radioPlatillo.isChecked) TipoProducto.PLATILLO else TipoProducto.BEBIDA
+        val category = if (binding.radioPlatillo.isChecked) "Platillo" else "Bebida"
 
         if (nombre.isNotEmpty() && precioStr.isNotEmpty()) {
-            val precio = precioStr.toDouble()
-            val nuevoProducto = Producto(nombre = nombre, precio = precio, tipo = tipo)
-            
-            // TODO: Guardar en una base de datos o ViewModel compartido
-            Toast.makeText(requireContext(), "Producto guardado: ${nuevoProducto.nombre}", Toast.LENGTH_SHORT).show()
-            
-            binding.editNombre.text?.clear()
-            binding.editPrecio.text?.clear()
+            val precio = precioStr.toDoubleOrNull()
+            if (precio != null) {
+                viewModel.saveProduct(nombre, precio, category)
+                Toast.makeText(requireContext(), "Producto guardado: $nombre", Toast.LENGTH_SHORT).show()
+                
+                binding.editNombre.text?.clear()
+                binding.editPrecio.text?.clear()
+            } else {
+                Toast.makeText(requireContext(), "Precio inválido", Toast.LENGTH_SHORT).show()
+            }
         } else {
             Toast.makeText(requireContext(), "Por favor complete todos los campos", Toast.LENGTH_SHORT).show()
         }

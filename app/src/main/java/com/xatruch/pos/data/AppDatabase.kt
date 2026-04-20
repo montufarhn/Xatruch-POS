@@ -14,7 +14,7 @@ import com.xatruch.pos.data.entity.Product
 
 @Database(
     entities = [BusinessData::class, Product::class, Invoice::class, InvoiceItem::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -32,7 +32,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "xatruch_pos_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

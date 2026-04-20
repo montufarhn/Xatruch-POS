@@ -11,7 +11,8 @@ data class Invoice(
     val totalAmount: Double,
     val customerName: String? = null,
     val rtn: String? = null,
-    val paymentMethod: String = "Efectivo"
+    val paymentMethod: String = "Efectivo",
+    val status: String = "PENDIENTE" // PENDIENTE, LISTO, COMPLETADO
 )
 
 @Entity(tableName = "invoice_items")
