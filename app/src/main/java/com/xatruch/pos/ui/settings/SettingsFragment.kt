@@ -97,7 +97,19 @@ class SettingsFragment : Fragment() {
     }
 
     private fun saveData() {
+        val currentData = viewModel.businessData.value
+        val newInitialNumber = binding.etInitialInvoice.text.toString().toIntOrNull() ?: 1
+        
+        // Si el número inicial cambió, reiniciamos el contador actual a ese número.
+        // De lo contrario, preservamos el progreso actual de la facturación.
+        val nextInvoiceNumber = if (currentData != null && currentData.initialInvoiceNumber != newInitialNumber) {
+            newInitialNumber
+        } else {
+            currentData?.currentInvoiceNumber ?: newInitialNumber
+        }
+
         val businessData = BusinessData(
+            id = 1, // Siempre usamos el mismo ID para el registro único
             name = binding.etBusinessName.text.toString(),
             address = binding.etAddress.text.toString(),
             phone1 = binding.etPhone1.text.toString(),
@@ -106,7 +118,8 @@ class SettingsFragment : Fragment() {
             rtn = binding.etRtn.text.toString(),
             cai = binding.etCai.text.toString(),
             billingRange = binding.etBillingRange.text.toString(),
-            initialInvoiceNumber = binding.etInitialInvoice.text.toString().toIntOrNull() ?: 1,
+            initialInvoiceNumber = newInitialNumber,
+            currentInvoiceNumber = nextInvoiceNumber,
             logoUri = selectedLogoUri?.toString()
         )
 

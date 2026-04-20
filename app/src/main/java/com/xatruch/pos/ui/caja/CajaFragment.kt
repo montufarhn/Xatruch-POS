@@ -46,9 +46,34 @@ class CajaFragment : Fragment() {
         setupRecyclerViews()
         observeViewModel()
         
+        binding.rgCustomerType.setOnCheckedChangeListener { _, checkedId ->
+            if (checkedId == binding.rbConDatos.id) {
+                binding.layoutCustomerInputs.visibility = View.VISIBLE
+            } else {
+                binding.layoutCustomerInputs.visibility = View.GONE
+                binding.etCustomerName.text.clear()
+                binding.etCustomerRtn.text.clear()
+            }
+        }
+
         binding.btnFacturar.setOnClickListener {
-            // Here we could show a dialog to enter customer name and RTN
-            viewModel.processInvoice("", "")
+            val customerName = if (binding.rbConDatos.isChecked) {
+                binding.etCustomerName.text.toString()
+            } else {
+                "Consumidor Final"
+            }
+            val customerRtn = if (binding.rbConDatos.isChecked) {
+                binding.etCustomerRtn.text.toString()
+            } else {
+                ""
+            }
+            
+            if (viewModel.cartItems.value.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), "El carrito está vacío", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            viewModel.processInvoice(customerName, customerRtn)
         }
 
         return binding.root
@@ -118,6 +143,13 @@ class CajaFragment : Fragment() {
         val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         dialogBinding.tvDate.text = "Fecha: ${sdf.format(Date(invoice.date))}"
         dialogBinding.tvCustomer.text = "Cliente: ${invoice.customerName}"
+        
+        if (!invoice.rtn.isNullOrBlank()) {
+            dialogBinding.tvCustomerRtn.visibility = View.VISIBLE
+            dialogBinding.tvCustomerRtn.text = "RTN: ${invoice.rtn}"
+        } else {
+            dialogBinding.tvCustomerRtn.visibility = View.GONE
+        }
         
         // Add items to table
         items.forEach { item ->

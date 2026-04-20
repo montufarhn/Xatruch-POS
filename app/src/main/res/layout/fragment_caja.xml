@@ -50,11 +50,64 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/layout_total"
+        app:layout_constraintBottom_toTopOf="@+id/layout_customer_selection"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_cart_title"
         tools:listitem="@layout/item_cart" />
+
+    <LinearLayout
+        android:id="@+id/layout_customer_selection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/layout_total">
+
+        <RadioGroup
+            android:id="@+id/rg_customer_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <RadioButton
+                android:id="@+id/rb_cf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="C/F (Consumidor Final)"
+                android:checked="true"/>
+            <RadioButton
+                android:id="@+id/rb_con_datos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Con Datos"/>
+        </RadioGroup>
+
+        <LinearLayout
+            android:id="@+id/layout_customer_inputs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/et_customer_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre del Cliente"
+                android:inputType="textPersonName"
+                android:textSize="14sp"/>
+
+            <EditText
+                android:id="@+id/et_customer_rtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="RTN"
+                android:inputType="number"
+                android:textSize="14sp"/>
+        </LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/layout_total"
