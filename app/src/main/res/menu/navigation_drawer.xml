@@ -5,17 +5,25 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_transform"
+            android:id="@+id/nav_caja"
             android:icon="@drawable/ic_camera_black_24dp"
-            android:title="@string/menu_transform" />
+            android:title="@string/menu_caja" />
         <item
-            android:id="@+id/nav_reflow"
+            android:id="@+id/nav_cocina"
             android:icon="@drawable/ic_gallery_black_24dp"
-            android:title="@string/menu_reflow" />
+            android:title="@string/menu_cocina" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_inventario"
             android:icon="@drawable/ic_slideshow_black_24dp"
-            android:title="@string/menu_slideshow" />
+            android:title="@string/menu_inventario" />
+        <item
+            android:id="@+id/nav_reportes"
+            android:icon="@drawable/ic_gallery_black_24dp"
+            android:title="@string/menu_reportes" />
+        <item
+            android:id="@+id/nav_menu"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/menu_menu" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings_black_24dp"
