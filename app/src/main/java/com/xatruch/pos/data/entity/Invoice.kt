@@ -1,7 +1,9 @@
 package com.xatruch.pos.data.entity
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 
 @Entity(tableName = "invoices")
 data class Invoice(
@@ -24,4 +26,19 @@ data class InvoiceItem(
     val quantity: Int,
     val unitPrice: Double,
     val subtotal: Double
+)
+
+data class InvoiceWithItems(
+    @Embedded val invoice: Invoice,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "invoiceId"
+    )
+    val items: List<InvoiceItem>
+)
+
+data class ProductSales(
+    val productName: String,
+    val totalQuantity: Int,
+    val totalSales: Double
 )

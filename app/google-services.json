@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1027221185367",
+    "project_id": "multiserviciosflores",
+    "storage_bucket": "multiserviciosflores.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1027221185367:android:6a8f33320ebe94eddc9412",
+        "android_client_info": {
+          "package_name": "com.xatruch.pos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzzBlruh3aEokTVEzm_VaJOvRFSwMFKh4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

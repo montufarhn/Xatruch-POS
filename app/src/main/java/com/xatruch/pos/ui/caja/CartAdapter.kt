@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.xatruch.pos.databinding.ItemCartBinding
+import java.util.Locale
 
 class CartAdapter(
     private val onIncrease: (CajaViewModel.CartItem) -> Unit,
@@ -24,16 +25,15 @@ class CartAdapter(
     inner class CartViewHolder(private val binding: ItemCartBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: CajaViewModel.CartItem) {
             binding.tvName.text = item.product.name
-            binding.tvQuantity.text = "x${item.quantity}"
-            binding.tvSubtotal.text = "L. ${String.format("%.2f", item.product.price * item.quantity)}"
+            binding.tvQuantity.text = item.quantity.toString()
+            binding.tvSubtotal.text = String.format(Locale.getDefault(), "L. %.2f", item.product.price * item.quantity)
             
-            binding.root.setOnClickListener {
+            binding.btnPlus.setOnClickListener {
                 onIncrease(item)
             }
             
-            binding.root.setOnLongClickListener {
+            binding.btnMinus.setOnClickListener {
                 onDecrease(item)
-                true
             }
         }
     }

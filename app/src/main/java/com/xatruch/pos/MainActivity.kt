@@ -1,5 +1,6 @@
 package com.xatruch.pos
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -25,12 +26,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        binding.appBarMain.fab?.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
-        }
-
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
         val navController = navHostFragment.navController
@@ -48,7 +43,25 @@ class MainActivity : AppCompatActivity() {
 
         // Vincular los componentes de navegación si existen en el layout actual
         binding.navView?.setupWithNavController(navController)
-        binding.appBarMain.contentMain.bottomNavView?.setupWithNavController(navController)
+
+        binding.navView?.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_logout -> {
+                    com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
+                    startActivity(Intent(this, com.xatruch.pos.ui.auth.LoginActivity::class.java))
+                    finish()
+                    true
+                }
+                else -> {
+                    // This allows normal navigation for other items
+                    val handled = androidx.navigation.ui.NavigationUI.onNavDestinationSelected(item, navController)
+                    if (handled) {
+                        binding.drawerLayout?.closeDrawers()
+                    }
+                    handled
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

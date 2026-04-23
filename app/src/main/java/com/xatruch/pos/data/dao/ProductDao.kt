@@ -15,6 +15,9 @@ interface ProductDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(product: Product)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWithId(product: Product): Long
+
     @Update
     suspend fun update(product: Product)
 

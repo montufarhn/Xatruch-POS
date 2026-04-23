@@ -30,7 +30,7 @@ class CocinaFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        orderAdapter = OrderAdapter(viewModel, viewLifecycleOwner)
+        orderAdapter = OrderAdapter(viewModel)
         binding.recyclerOrders.apply {
             adapter = orderAdapter
             layoutManager = LinearLayoutManager(requireContext())

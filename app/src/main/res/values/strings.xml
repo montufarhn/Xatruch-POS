@@ -37,4 +37,6 @@
     <string name="image_view_item_transform_content_description">Represents an image view in the
         item
     </string>
+    <string name="desc_increase">Aumentar cantidad</string>
+    <string name="desc_decrease">Disminuir cantidad</string>
 </resources>

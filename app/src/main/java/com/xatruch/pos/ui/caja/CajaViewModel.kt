@@ -6,7 +6,9 @@ import com.xatruch.pos.data.AppDatabase
 import com.xatruch.pos.data.entity.BusinessData
 import com.xatruch.pos.data.entity.Invoice
 import com.xatruch.pos.data.entity.InvoiceItem
+import com.xatruch.pos.data.entity.InvoiceWithItems
 import com.xatruch.pos.data.entity.Product
+import com.xatruch.pos.data.repository.FirestoreRepository
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -17,6 +19,7 @@ class CajaViewModel(application: Application) : AndroidViewModel(application) {
     private val productDao = db.productDao()
     private val invoiceDao = db.invoiceDao()
     private val businessDao = db.businessDao()
+    private val firestoreRepository = FirestoreRepository()
 
     val allProducts: LiveData<List<Product>> = productDao.getAllProducts().asLiveData()
     
@@ -59,8 +62,8 @@ class CajaViewModel(application: Application) : AndroidViewModel(application) {
         _cartItems.value = emptyList()
     }
 
-    private val _lastProcessedInvoice = MutableLiveData<Triple<Invoice, List<InvoiceItem>, BusinessData>?>()
-    val lastProcessedInvoice: LiveData<Triple<Invoice, List<InvoiceItem>, BusinessData>?> = _lastProcessedInvoice
+    private val _lastProcessedInvoice = MutableLiveData<Pair<InvoiceWithItems, BusinessData>?>()
+    val lastProcessedInvoice: LiveData<Pair<InvoiceWithItems, BusinessData>?> = _lastProcessedInvoice
 
     fun clearLastInvoice() {
         _lastProcessedInvoice.value = null
@@ -104,11 +107,17 @@ class CajaViewModel(application: Application) : AndroidViewModel(application) {
             val id = invoiceDao.insertInvoiceWithItems(invoice, invoiceItems)
             
             // Actualizar el número de factura para la próxima vez
-            businessDao.insertOrUpdate(business.copy(currentInvoiceNumber = nextInvoiceNum + 1))
+            val updatedBusiness = business.copy(currentInvoiceNumber = nextInvoiceNum + 1)
+            businessDao.insertOrUpdate(updatedBusiness)
             
             val savedInvoice = invoice.copy(id = id)
+            val savedInvoiceWithItems = InvoiceWithItems(savedInvoice, invoiceItems)
             
-            _lastProcessedInvoice.postValue(Triple(savedInvoice, invoiceItems, business))
+            // Sync to Firestore
+            firestoreRepository.saveInvoice(savedInvoice, invoiceItems)
+            firestoreRepository.saveBusinessData(updatedBusiness)
+            
+            _lastProcessedInvoice.postValue(Pair(savedInvoiceWithItems, updatedBusiness))
             clearCart()
         }
     }

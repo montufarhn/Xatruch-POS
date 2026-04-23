@@ -17,11 +17,12 @@ import com.xatruch.pos.data.AppDatabase
 import com.xatruch.pos.data.entity.BusinessData
 import com.xatruch.pos.data.entity.Invoice
 import com.xatruch.pos.data.entity.InvoiceItem
+import com.xatruch.pos.data.entity.InvoiceWithItems
 import com.xatruch.pos.databinding.DialogInvoicePreviewBinding
 import com.xatruch.pos.databinding.FragmentCajaBinding
 import com.xatruch.pos.ui.menu.ProductAdapter
 import com.xatruch.pos.ui.settings.SettingsViewModel
-import kotlinx.coroutines.flow.firstOrNull
+import com.xatruch.pos.util.InvoiceDialogHelper
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,8 +34,6 @@ class CajaFragment : Fragment() {
     private val viewModel: CajaViewModel by viewModels()
     private lateinit var productAdapter: ProductAdapter
     private lateinit var cartAdapter: CartAdapter
-
-    private val settingsViewModel: SettingsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -111,84 +110,15 @@ class CajaFragment : Fragment() {
         }
 
         viewModel.totalAmount.observe(viewLifecycleOwner) { total ->
-            binding.tvTotalAmount.text = "L. ${String.format("%.2f", total)}"
+            binding.tvTotalAmount.text = String.format(Locale.getDefault(), "L. %.2f", total)
         }
 
-        viewModel.lastProcessedInvoice.observe(viewLifecycleOwner) { triple ->
-            triple?.let { (invoice, items, businessData) ->
-                showInvoiceDialog(invoice, items, businessData)
+        viewModel.lastProcessedInvoice.observe(viewLifecycleOwner) { pair ->
+            pair?.let { (invoiceWithItems, businessData) ->
+                InvoiceDialogHelper.showInvoiceDialog(requireContext(), layoutInflater, invoiceWithItems, businessData)
                 viewModel.clearLastInvoice()
             }
         }
-    }
-
-    private fun showInvoiceDialog(invoice: Invoice, items: List<InvoiceItem>, businessData: BusinessData) {
-        val dialogBinding = DialogInvoicePreviewBinding.inflate(layoutInflater)
-        
-        if (!businessData.logoUri.isNullOrEmpty()) {
-            try {
-                dialogBinding.imgLogo.visibility = View.VISIBLE
-                dialogBinding.imgLogo.setImageURI(Uri.parse(businessData.logoUri))
-            } catch (e: Exception) {
-                dialogBinding.imgLogo.visibility = View.GONE
-            }
-        } else {
-            dialogBinding.imgLogo.visibility = View.GONE
-        }
-
-        dialogBinding.tvBusinessName.text = if (businessData.name.isBlank()) "Nombre del Negocio" else businessData.name
-        dialogBinding.tvBusinessDetails.text = "RTN: ${businessData.rtn}\n${businessData.address}\n${businessData.phone1}"
-        dialogBinding.tvInvoiceNumber.text = "Factura: ${invoice.invoiceNumber}"
-        
-        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-        dialogBinding.tvDate.text = "Fecha: ${sdf.format(Date(invoice.date))}"
-        dialogBinding.tvCustomer.text = "Cliente: ${invoice.customerName}"
-        
-        if (!invoice.rtn.isNullOrBlank()) {
-            dialogBinding.tvCustomerRtn.visibility = View.VISIBLE
-            dialogBinding.tvCustomerRtn.text = "RTN: ${invoice.rtn}"
-        } else {
-            dialogBinding.tvCustomerRtn.visibility = View.GONE
-        }
-        
-        // Add items to table
-        items.forEach { item ->
-            val row = TableRow(requireContext())
-            
-            val nameTv = TextView(requireContext()).apply { 
-                text = item.productName
-                layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f)
-                setTextColor(android.graphics.Color.BLACK)
-            }
-            val qtyTv = TextView(requireContext()).apply { 
-                text = item.quantity.toString()
-                gravity = android.view.Gravity.CENTER
-                setPadding(16, 0, 16, 0)
-                setTextColor(android.graphics.Color.BLACK)
-            }
-            val priceTv = TextView(requireContext()).apply { 
-                text = String.format("%.2f", item.subtotal)
-                gravity = android.view.Gravity.END
-                setTextColor(android.graphics.Color.BLACK)
-            }
-            
-            row.addView(nameTv)
-            row.addView(qtyTv)
-            row.addView(priceTv)
-            dialogBinding.tableItems.addView(row)
-        }
-        
-        dialogBinding.tvTotal.text = "L. ${String.format("%.2f", invoice.totalAmount)}"
-        dialogBinding.tvCai.text = "CAI: ${businessData.cai}\nRango: ${businessData.billingRange}"
-
-        AlertDialog.Builder(requireContext())
-            .setTitle("Factura Generada")
-            .setView(dialogBinding.root)
-            .setPositiveButton("Imprimir") { _, _ ->
-                Toast.makeText(requireContext(), "Enviando a impresora...", Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton("Cerrar", null)
-            .show()
     }
 
     override fun onDestroyView() {

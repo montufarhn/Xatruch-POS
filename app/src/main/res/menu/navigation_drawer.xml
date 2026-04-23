@@ -6,27 +6,31 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_caja"
-            android:icon="@drawable/ic_camera_black_24dp"
+            android:icon="@drawable/icons8_cajero_100"
             android:title="@string/menu_caja" />
         <item
             android:id="@+id/nav_cocina"
-            android:icon="@drawable/ic_gallery_black_24dp"
+            android:icon="@drawable/icons8_kitchen_room_100"
             android:title="@string/menu_cocina" />
         <item
             android:id="@+id/nav_inventario"
-            android:icon="@drawable/ic_slideshow_black_24dp"
+            android:icon="@drawable/icons8_trolley_100"
             android:title="@string/menu_inventario" />
         <item
             android:id="@+id/nav_reportes"
-            android:icon="@drawable/ic_gallery_black_24dp"
+            android:icon="@drawable/icons8_business_report_100"
             android:title="@string/menu_reportes" />
         <item
             android:id="@+id/nav_menu"
-            android:icon="@drawable/ic_settings_black_24dp"
+            android:icon="@drawable/icons8_restaurant_menu_100"
             android:title="@string/menu_menu" />
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_settings_black_24dp"
+            android:icon="@drawable/icons8_setting_100"
             android:title="@string/menu_settings" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@android:drawable/ic_lock_power_off"
+            android:title="Cerrar Sesión" />
     </group>
 </menu>
