@@ -19,15 +19,24 @@ interface InvoiceDao {
     @Query("SELECT * FROM invoices ORDER BY date DESC")
     fun getAllInvoices(): Flow<List<InvoiceWithItems>>
 
+    @Transaction
+    @Query("SELECT * FROM invoices")
+    suspend fun getAllInvoicesSync(): List<InvoiceWithItems>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertInvoice(invoice: Invoice): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertInvoiceItems(items: List<InvoiceItem>)
 
+    @Query("DELETE FROM invoice_items WHERE invoiceId = :invoiceId")
+    suspend fun deleteItemsForInvoice(invoiceId: Long)
+
     @Transaction
     suspend fun insertInvoiceWithItems(invoice: Invoice, items: List<InvoiceItem>): Long {
         val invoiceId = insertInvoice(invoice)
+        // Eliminamos los items existentes para evitar duplicados si es una actualización
+        deleteItemsForInvoice(invoiceId)
         val itemsWithId = items.map { it.copy(invoiceId = invoiceId) }
         insertInvoiceItems(itemsWithId)
         return invoiceId

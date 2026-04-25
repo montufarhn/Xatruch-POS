@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AppInsightsSettings">
+    <option name="selectedTabId" value="Firebase Crashlytics" />
     <option name="tabSettings">
       <map>
         <entry key="Android vitals">
@@ -23,9 +24,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.xatruch.pos" />
-                  <option name="mobileSdkAppId" value="1:1027221185367:android:6a8f33320ebe94eddc9412" />
-                  <option name="projectId" value="multiserviciosflores" />
-                  <option name="projectNumber" value="1027221185367" />
+                  <option name="mobileSdkAppId" value="1:991437937658:android:fc0cbe5171c7a4c3bf2243" />
+                  <option name="projectId" value="xatruch-tech-ee83c" />
+                  <option name="projectNumber" value="991437937658" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -39,4 +39,13 @@
     </string>
     <string name="desc_increase">Aumentar cantidad</string>
     <string name="desc_decrease">Disminuir cantidad</string>
+    <string name="desc_delete">Eliminar item</string>
+    <string name="delete_confirmation_title">Confirmar eliminación</string>
+    <string name="delete_confirmation_msg">¿Estás seguro de que deseas eliminar este elemento? Esta acción no se puede deshacer.</string>
+    <string name="btn_eliminar">Eliminar</string>
+    <string name="add_item">Agregar item</string>
+    <string name="label_unidad">Unidad (ej. pza, kg)</string>
+    <string name="label_cantidad">Cantidad inicial</string>
+    <string name="label_stock_min">Stock mínimo</string>
+    <string name="error_empty_fields">Por favor complete todos los campos</string>
 </resources>

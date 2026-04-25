@@ -5,22 +5,23 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.xatruch.pos.data.dao.BusinessDao
+import com.xatruch.pos.data.dao.IngredientDao
+import com.xatruch.pos.data.dao.InventoryDao
 import com.xatruch.pos.data.dao.InvoiceDao
 import com.xatruch.pos.data.dao.ProductDao
-import com.xatruch.pos.data.entity.BusinessData
-import com.xatruch.pos.data.entity.Invoice
-import com.xatruch.pos.data.entity.InvoiceItem
-import com.xatruch.pos.data.entity.Product
+import com.xatruch.pos.data.entity.*
 
 @Database(
-    entities = [BusinessData::class, Product::class, Invoice::class, InvoiceItem::class],
-    version = 2,
+    entities = [BusinessData::class, Product::class, Invoice::class, InvoiceItem::class, InventoryItem::class, ProductIngredient::class],
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun businessDao(): BusinessDao
     abstract fun productDao(): ProductDao
     abstract fun invoiceDao(): InvoiceDao
+    abstract fun inventoryDao(): InventoryDao
+    abstract fun ingredientDao(): IngredientDao
 
     companion object {
         @Volatile

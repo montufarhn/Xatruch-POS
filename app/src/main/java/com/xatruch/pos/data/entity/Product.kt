@@ -6,9 +6,9 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "products")
 data class Product(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val name: String,
+    val name: String = "",
     val description: String = "",
-    val price: Double,
-    val category: String, // "Platillo" or "Bebida"
+    val price: Double = 0.0,
+    val category: String = "", // "Platillo" or "Bebida"
     val imageUri: String? = null
 )

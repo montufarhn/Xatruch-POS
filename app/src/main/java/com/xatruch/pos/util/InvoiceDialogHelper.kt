@@ -2,7 +2,7 @@ package com.xatruch.pos.util
 
 import android.content.Context
 import android.graphics.Color
-import android.net.Uri
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +10,7 @@ import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import coil.load
 import com.xatruch.pos.data.entity.BusinessData
 import com.xatruch.pos.data.entity.InvoiceWithItems
 import com.xatruch.pos.databinding.DialogInvoicePreviewBinding
@@ -28,10 +29,20 @@ object InvoiceDialogHelper {
         val dialogBinding = DialogInvoicePreviewBinding.inflate(layoutInflater)
 
         if (!businessData.logoUri.isNullOrEmpty()) {
-            try {
+            val source: Any = if (businessData.logoUri.startsWith("data:image")) {
+                ImageUtils.decodeBase64(businessData.logoUri) ?: View.GONE
+            } else {
+                businessData.logoUri
+            }
+
+            if (source != View.GONE) {
                 dialogBinding.imgLogo.visibility = View.VISIBLE
-                dialogBinding.imgLogo.setImageURI(Uri.parse(businessData.logoUri))
-            } catch (e: Exception) {
+                dialogBinding.imgLogo.load(source) {
+                    crossfade(true)
+                    // IMPORTANTE: Desactivar hardware bitmaps para que el logo sea visible al imprimir
+                    allowHardware(false)
+                }
+            } else {
                 dialogBinding.imgLogo.visibility = View.GONE
             }
         } else {
@@ -94,6 +105,8 @@ object InvoiceDialogHelper {
             .setView(dialogBinding.root)
             .setPositiveButton("Imprimir") { _, _ ->
                 Toast.makeText(context, "Enviando a impresora...", Toast.LENGTH_SHORT).show()
+                // Imprimimos el contenedor interno para capturar toda la factura incluso si hay scroll
+                PrintUtils.printView(context, dialogBinding.invoiceContainer, "Factura_${invoice.invoiceNumber}")
             }
             .setNegativeButton("Cerrar", null)
             .show()

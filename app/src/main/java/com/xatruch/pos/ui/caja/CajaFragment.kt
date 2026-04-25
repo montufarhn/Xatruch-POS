@@ -1,6 +1,5 @@
 package com.xatruch.pos.ui.caja
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +8,7 @@ import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -38,12 +38,16 @@ class CajaFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentCajaBinding.inflate(inflater, container, false)
         
         setupRecyclerViews()
         observeViewModel()
+        
+        binding.etSearch.doOnTextChanged { text, _, _, _ ->
+            viewModel.setSearchQuery(text?.toString().orEmpty())
+        }
         
         binding.rgCustomerType.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId == binding.rbConDatos.id) {
@@ -79,10 +83,14 @@ class CajaFragment : Fragment() {
     }
 
     private fun setupRecyclerViews() {
-        // Product Menu Adapter
-        productAdapter = ProductAdapter { product ->
-            viewModel.addToCart(product)
-        }
+        // Product Menu Adapter - Especificamos onItemClick para evitar ambigüedad
+        productAdapter = ProductAdapter(
+            onItemClick = { product ->
+                android.util.Log.d("CajaFragment", "Product clicked in fragment: ${product.name}")
+                viewModel.addToCart(product)
+                Toast.makeText(requireContext(), "Agregado: ${product.name}", Toast.LENGTH_SHORT).show()
+            }
+        )
         
         binding.recyclerProducts.apply {
             adapter = productAdapter
@@ -91,8 +99,8 @@ class CajaFragment : Fragment() {
 
         // Cart Adapter
         cartAdapter = CartAdapter(
-            onIncrease = { item -> viewModel.addToCart(item.product) },
-            onDecrease = { item -> viewModel.removeFromCart(item.product) }
+            onIncrease = { viewModel.addToCart(it.product) },
+            onDecrease = { viewModel.removeFromCart(it.product) }
         )
         binding.recyclerCart.apply {
             adapter = cartAdapter
@@ -101,7 +109,7 @@ class CajaFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.allProducts.observe(viewLifecycleOwner) { products ->
+        viewModel.filteredProducts.observe(viewLifecycleOwner) { products ->
             productAdapter.submitList(products)
         }
 

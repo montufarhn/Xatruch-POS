@@ -12,10 +12,10 @@ interface ProductDao {
     @Query("SELECT * FROM products WHERE category = :category ORDER BY name ASC")
     fun getProductsByCategory(category: String): Flow<List<Product>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insert(product: Product)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insertWithId(product: Product): Long
 
     @Update

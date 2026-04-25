@@ -47,11 +47,18 @@
         android:text="Iniciar Sesión" />
 
     <Button
+        android:id="@+id/btn_forgot_password"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="¿Olvidaste tu contraseña?" />
+
+    <Button
         android:id="@+id/btn_register"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="¿No tienes cuenta? Regístrate" />
+        android:text="¿No tienes cuenta? Regístrate aquí" />
 
     <ProgressBar
         android:id="@+id/loading"

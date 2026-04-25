@@ -51,23 +51,22 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.btnRegister.setOnClickListener {
-            val email = binding.etEmail.text.toString()
-            val password = binding.etPassword.text.toString()
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
 
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                binding.loading.visibility = View.VISIBLE
-                auth.createUserWithEmailAndPassword(email, password)
+        binding.btnForgotPassword.setOnClickListener {
+            val email = binding.etEmail.text.toString()
+            if (email.isNotEmpty()) {
+                auth.sendPasswordResetEmail(email)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            Toast.makeText(this, "Cuenta creada exitosamente", Toast.LENGTH_SHORT).show()
-                            performSyncAndNavigate()
+                            Toast.makeText(this, "Correo de restablecimiento enviado a $email", Toast.LENGTH_LONG).show()
                         } else {
-                            binding.loading.visibility = View.GONE
                             Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                         }
                     }
             } else {
-                Toast.makeText(this, "Completa todos los campos para registrarte", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Ingresa tu correo electrónico primero", Toast.LENGTH_SHORT).show()
             }
         }
     }

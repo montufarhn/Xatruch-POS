@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +12,12 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import coil.load
+import coil.transform.CircleCropTransformation
+import com.xatruch.pos.R
 import com.xatruch.pos.data.entity.BusinessData
 import com.xatruch.pos.databinding.FragmentSettingsBinding
+import com.xatruch.pos.util.ImageUtils
 
 class SettingsFragment : Fragment() {
 
@@ -20,19 +25,18 @@ class SettingsFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: SettingsViewModel by viewModels()
     private var selectedLogoUri: Uri? = null
+    private var isNewLogoSelected = false
 
     private val selectImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val uri = result.data?.data
             if (uri != null) {
+                Log.d("SettingsFragment", "Nueva imagen seleccionada: $uri")
                 selectedLogoUri = uri
-                try {
-                    val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    requireContext().contentResolver.takePersistableUriPermission(uri, takeFlags)
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                isNewLogoSelected = true
+                binding.imgLogo.load(uri) {
+                    transformations(CircleCropTransformation())
                 }
-                binding.imgLogo.setImageURI(uri)
             }
         }
     }
@@ -77,21 +81,28 @@ class SettingsFragment : Fragment() {
                 binding.etBillingRange.setText(it.billingRange)
                 binding.etInitialInvoice.setText(it.initialInvoiceNumber.toString())
                 
-                if (!it.logoUri.isNullOrEmpty()) {
-                    try {
-                        val uri = Uri.parse(it.logoUri)
-                        // Verify if we still have permission to access this URI
-                        context?.contentResolver?.query(uri, null, null, null, null)?.use {
-                            selectedLogoUri = uri
-                            binding.imgLogo.setImageURI(uri)
-                        } ?: run {
-                            // If we can't access it, don't try to load it and maybe clear it
-                            selectedLogoUri = null
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                if (!it.logoUri.isNullOrEmpty() && !isNewLogoSelected) {
+                    val source: Any = if (it.logoUri.startsWith("data:image")) {
+                        ImageUtils.decodeBase64(it.logoUri) ?: R.mipmap.ic_launcher_round
+                    } else {
+                        it.logoUri
+                    }
+                    binding.imgLogo.load(source) {
+                        crossfade(true)
+                        placeholder(R.mipmap.ic_launcher_round)
+                        transformations(CircleCropTransformation())
                     }
                 }
+            }
+        }
+
+        viewModel.saveStatus.observe(viewLifecycleOwner) { result ->
+            result.onSuccess {
+                Toast.makeText(context, "Configuración guardada", Toast.LENGTH_SHORT).show()
+                isNewLogoSelected = false
+            }.onFailure { error ->
+                Log.e("SettingsFragment", "Error al guardar", error)
+                Toast.makeText(context, "Error al guardar: ${error.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -100,8 +111,6 @@ class SettingsFragment : Fragment() {
         val currentData = viewModel.businessData.value
         val newInitialNumber = binding.etInitialInvoice.text.toString().toIntOrNull() ?: 1
         
-        // Si el número inicial cambió, reiniciamos el contador actual a ese número.
-        // De lo contrario, preservamos el progreso actual de la facturación.
         val nextInvoiceNumber = if (currentData != null && currentData.initialInvoiceNumber != newInitialNumber) {
             newInitialNumber
         } else {
@@ -109,7 +118,7 @@ class SettingsFragment : Fragment() {
         }
 
         val businessData = BusinessData(
-            id = 1, // Siempre usamos el mismo ID para el registro único
+            id = 1,
             name = binding.etBusinessName.text.toString(),
             address = binding.etAddress.text.toString(),
             phone1 = binding.etPhone1.text.toString(),
@@ -120,11 +129,10 @@ class SettingsFragment : Fragment() {
             billingRange = binding.etBillingRange.text.toString(),
             initialInvoiceNumber = newInitialNumber,
             currentInvoiceNumber = nextInvoiceNumber,
-            logoUri = selectedLogoUri?.toString()
+            logoUri = currentData?.logoUri
         )
 
-        viewModel.saveBusinessData(businessData)
-        Toast.makeText(context, "Configuración guardada", Toast.LENGTH_SHORT).show()
+        viewModel.saveBusinessData(businessData, if (isNewLogoSelected) selectedLogoUri else null)
     }
 
     override fun onDestroyView() {

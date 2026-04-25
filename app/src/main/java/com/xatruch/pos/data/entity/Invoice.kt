@@ -8,9 +8,9 @@ import androidx.room.Relation
 @Entity(tableName = "invoices")
 data class Invoice(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val invoiceNumber: String,
+    val invoiceNumber: String = "",
     val date: Long = System.currentTimeMillis(),
-    val totalAmount: Double,
+    val totalAmount: Double = 0.0,
     val customerName: String? = null,
     val rtn: String? = null,
     val paymentMethod: String = "Efectivo",
@@ -20,12 +20,12 @@ data class Invoice(
 @Entity(tableName = "invoice_items")
 data class InvoiceItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val invoiceId: Long,
-    val productId: Long,
-    val productName: String,
-    val quantity: Int,
-    val unitPrice: Double,
-    val subtotal: Double
+    val invoiceId: Long = 0,
+    val productId: Long = 0,
+    val productName: String = "",
+    val quantity: Int = 0,
+    val unitPrice: Double = 0.0,
+    val subtotal: Double = 0.0
 )
 
 data class InvoiceWithItems(

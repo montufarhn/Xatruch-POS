@@ -1,6 +1,7 @@
 package com.xatruch.pos.ui.menu
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -10,7 +11,10 @@ import com.xatruch.pos.databinding.ItemProductBinding
 
 import java.util.Locale
 
-class ProductAdapter(private val onItemClick: ((Product) -> Unit)? = null) : ListAdapter<Product, ProductAdapter.ProductViewHolder>(ProductDiffCallback()) {
+class ProductAdapter(
+    private val onItemClick: ((Product) -> Unit)? = null,
+    private val onDeleteClick: ((Product) -> Unit)? = null
+) : ListAdapter<Product, ProductAdapter.ProductViewHolder>(ProductDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val binding = ItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -28,7 +32,17 @@ class ProductAdapter(private val onItemClick: ((Product) -> Unit)? = null) : Lis
             binding.tvCategory.text = product.category
             
             binding.root.setOnClickListener {
+                android.util.Log.d("ProductAdapter", "Item clicked: ${product.name}")
                 onItemClick?.invoke(product)
+            }
+
+            if (onDeleteClick != null) {
+                binding.btnDelete.visibility = View.VISIBLE
+                binding.btnDelete.setOnClickListener {
+                    onDeleteClick.invoke(product)
+                }
+            } else {
+                binding.btnDelete.visibility = View.GONE
             }
         }
     }
