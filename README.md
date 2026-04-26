@@ -1,43 +1,65 @@
 # Xatruch POS
 
-Xatruch POS is a modern, cloud-synced Point of Sale system designed for restaurants and small businesses. It allows users to manage their menu, track inventory in real-time, and process sales efficiently on Android devices.
+Xatruch POS es un sistema de punto de venta moderno, sincronizado en la nube, diseñado para restaurantes y pequeños negocios. Permite a los usuarios gestionar su menú, controlar el inventario en tiempo real y procesar las ventas de forma eficiente en dispositivos Android.
 
-## 🚀 Key Features
+## 🚀 Características principales
 
-- **Sales Management (Caja):**
-  - Real-time cart management.
-  - Sequential invoice numbering.
-  - Support for "Consumidor Final" and registered clients (RTN support).
-  - Built-in search functionality to quickly find products in large menus.
-- **Inventory & Recipes:**
-  - Separate management of Menu items and Inventory supplies.
-  - **Recipe System:** Link menu products to inventory ingredients for automatic stock deduction during sales.
-  - Fallback name-matching for simple items (e.g., drinks).
-- **Cloud Synchronization:**
-  - Powered by **Firebase (Firestore & Auth)**.
-  - Real-time synchronization across multiple devices.
-  - Offline support via **Room Database**.
-- **Printing:**
-  - Professional invoice generation.
-  - Support for thermal printers and PDF export.
-  - High-fidelity capture including business logos.
-- **Modern UI:**
-  - Fully compatible with **Dark Mode**.
-  - Optimized for both vertical (phone) and horizontal (tablet) orientations.
+- **Gestión de ventas (Caja):**
 
-## 🛠 Tech Stack
+- Gestión de carritos en tiempo real.
 
-- **Language:** Kotlin
-- **Local Database:** Room (Architecture Components)
-- **Cloud Database:** Firebase Firestore
-- **Authentication:** Firebase Auth
-- **Image Loading:** Coil
-- **UI Components:** Material Design 2
-- **Dependency Management:** Gradle Version Catalog (.toml)
+- Numeración secuencial de facturas.
 
-## 📁 Project Structure
+- Compatibilidad con "Consumidor Final" y clientes registrados (compatibilidad con RTN).
 
-- `data/`: Room entities, DAOs, and database configuration.
-- `repository/`: Data management logic and Firebase synchronization (SyncManager).
-- `ui/`: UI components organized by feature (Auth, Caja, Menu, Settings).
-- `util/`: Helper classes for images, printing, and dialogs.
+- Función de búsqueda integrada para encontrar rápidamente productos en menús extensos.
+
+- **Inventario y recetas:**
+
+- Gestión independiente de los artículos del menú y del inventario.
+
+- **Sistema de recetas:** Vincula los productos del menú con los ingredientes del inventario para la deducción automática de existencias durante las ventas.
+
+- Coincidencia de nombres para artículos sencillos (p. ej., bebidas).
+
+- **Sincronización en la nube:**
+
+- Impulsado por **Firebase (Firestore y autenticación)**.
+
+- Sincronización en tiempo real entre múltiples dispositivos.
+
+- Soporte sin conexión mediante **Room Database**.
+
+- **Impresión:**
+
+- Generación de facturas profesionales.
+
+- Compatibilidad con impresoras térmicas y exportación a PDF.
+
+- Captura de alta fidelidad, incluyendo logotipos de empresas.
+
+- **Interfaz de usuario moderna:**
+
+- Totalmente compatible con el **Modo Oscuro**.
+
+- Optimizado para orientación vertical (teléfono) y horizontal (tableta).
+
+## 🛠 Tecnologías utilizadas
+
+- **Lenguaje:** Kotlin
+- **Base de datos local:** Room (Componentes de arquitectura)
+- **Base de datos en la nube:** Firebase Firestore
+- **Autenticación:** Firebase Auth
+- **Carga de imágenes:** Coil
+- **Componentes de interfaz de usuario:** Material Design 2
+
+- **Gestión de dependencias:** Catálogo de versiones de Gradle (.toml)
+
+## 📁 Estructura del proyecto
+
+- `data/`: Entidades de Room, DAOs y configuración de la base de datos.
+- `repository/`: Lógica de gestión de datos y sincronización con Firebase (SyncManager).
+
+- `ui/`: Componentes de la interfaz de usuario organizados por función (Autenticación, Caja, Menú, Configuración).
+
+- `util/`: Clases auxiliares para imágenes, impresión y diálogos.
